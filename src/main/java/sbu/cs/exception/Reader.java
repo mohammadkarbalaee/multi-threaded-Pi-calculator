@@ -11,7 +11,6 @@ public class Reader {
      * @param args
      */
     public void readTwitterCommands(List<String> args) {
-        throw new RuntimeException();
     }
 
     /**
