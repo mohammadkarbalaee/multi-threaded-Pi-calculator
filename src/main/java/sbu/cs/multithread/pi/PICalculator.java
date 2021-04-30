@@ -11,26 +11,24 @@ import java.util.concurrent.TimeUnit;
 
 public class PICalculator
 {
-    private ExecutorService executorService = Executors.newFixedThreadPool(8);
-    private final BigDecimal angle = new BigDecimal(String.valueOf(BigDecimalMath.pi(new MathContext(1010, RoundingMode.HALF_DOWN)))).divide(BigDecimal.valueOf(1000000),new MathContext(1010,RoundingMode.HALF_DOWN));
+    private ExecutorService executorService = Executors.newFixedThreadPool(16);
 
     public String calculate(int floatingPoint)
     {
-        boolean isNegative = false;
-        for (int i = 1; i < 100; i++)
+        for (int i = 0; i <= 10000; i++)
         {
-            executorService.submit(new Calculator(i,isNegative,angle));
-            isNegative = !isNegative;
+            executorService.submit(new Calculator(i));
         }
         executorService.shutdown();
         try
         {
-            executorService.awaitTermination(10000, TimeUnit.MILLISECONDS);
+            executorService.awaitTermination(10000,TimeUnit.MILLISECONDS);
+            executorService.shutdownNow();
         }
         catch (InterruptedException e)
         {
             e.printStackTrace();
         }
-        return Pi.getPi().multiply(BigDecimal.valueOf(1000000)).toString();
+        return Pi.getPi().multiply(BigDecimal.valueOf(2)).toString().substring(0,floatingPoint+2);
     }
 }

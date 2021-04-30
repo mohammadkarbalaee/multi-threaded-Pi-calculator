@@ -9,49 +9,29 @@ import java.math.RoundingMode;
 public class Calculator implements Runnable
 {
     private int index;
-    private boolean isNegative;
-    private BigDecimal angle;
+    private final BigDecimal TWO = new BigDecimal(2,new MathContext(10000,RoundingMode.HALF_DOWN));
 
-    public Calculator(int index, boolean isNegative, BigDecimal angle)
+    public Calculator(int index)
     {
         this.index = index;
-        this.isNegative = isNegative;
-        this.angle = angle;
     }
 
     @Override
     public void run()
     {
-        BigDecimal fraction = numerator().divide(denominator(),new MathContext(1000,RoundingMode.HALF_DOWN));
-        if (isNegative)
-        {
-            Pi.addToPi(fraction.negate());
-        }
-        else
-        {
-            Pi.addToPi(fraction);
-        }
+        BigDecimal power2 = BigDecimalMath.pow(TWO,index,new MathContext(10000,RoundingMode.HALF_DOWN));
+        BigDecimal kFactorial = BigDecimalMath.factorial(index);
+        kFactorial = kFactorial.pow(2);
+        BigDecimal denominator = BigDecimalMath.factorial(oddSeries(index));
+        BigDecimal numerator = power2.multiply(kFactorial);
+        BigDecimal fraction = numerator.divide(denominator,new MathContext(10000,RoundingMode.HALF_DOWN));
+        Pi.addToPi(fraction);
     }
 
-    private BigDecimal denominator()
+
+    private int oddSeries(int index)
     {
-        int counter = index;
-        BigDecimal result = new BigDecimal(1);
-        while (counter > 0)
-        {
-            result = result.multiply(BigDecimal.valueOf(counter));
-            counter--;
-        }
-        return result;
+        return 2 * index + 1;
     }
 
-    private BigDecimal numerator()
-    {
-        BigDecimal result = new BigDecimal(1);
-        for (int i = 0; i < index; i++)
-        {
-            result = result.multiply(angle);
-        }
-        return result;
-    }
 }
