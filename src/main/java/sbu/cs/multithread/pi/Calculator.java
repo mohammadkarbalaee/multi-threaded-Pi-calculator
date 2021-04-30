@@ -1,5 +1,7 @@
 package sbu.cs.multithread.pi;
 
+import ch.obermuhlner.math.big.BigDecimalMath;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -8,31 +10,48 @@ public class Calculator implements Runnable
 {
     private int index;
     private boolean isNegative;
-    private final BigDecimal FOUR = new BigDecimal(4,new MathContext(1,RoundingMode.HALF_DOWN));
+    private BigDecimal angle;
 
-    public Calculator(int index,boolean isNegative)
+    public Calculator(int index, boolean isNegative, BigDecimal angle)
     {
         this.index = index;
         this.isNegative = isNegative;
+        this.angle = angle;
     }
 
     @Override
     public void run()
     {
-        BigDecimal bigDecimal = new BigDecimal(oddSeries(index));
-        bigDecimal = FOUR.divide(bigDecimal,new MathContext(1000,RoundingMode.HALF_DOWN));
+        BigDecimal fraction = numerator().divide(denominator(),new MathContext(1000,RoundingMode.HALF_DOWN));
         if (isNegative)
         {
-            Pi.addToPi(bigDecimal.negate());
+            Pi.addToPi(fraction.negate());
         }
         else
         {
-            Pi.addToPi(bigDecimal);
+            Pi.addToPi(fraction);
         }
     }
 
-    private int oddSeries(int index)
+    private BigDecimal denominator()
     {
-        return 2 * index - 1;
+        int counter = index;
+        BigDecimal result = new BigDecimal(1);
+        while (counter > 0)
+        {
+            result = result.multiply(BigDecimal.valueOf(counter));
+            counter--;
+        }
+        return result;
+    }
+
+    private BigDecimal numerator()
+    {
+        BigDecimal result = new BigDecimal(1);
+        for (int i = 0; i < index; i++)
+        {
+            result = result.multiply(angle);
+        }
+        return result;
     }
 }
