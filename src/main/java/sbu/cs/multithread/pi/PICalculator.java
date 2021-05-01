@@ -1,16 +1,34 @@
 package sbu.cs.multithread.pi;
 
-public class PICalculator {
+import ch.obermuhlner.math.big.BigDecimalMath;
 
-    /**
-     * calculate pi and represent it as string with given floating point number (numbers after .)
-     * check test cases for more info
-     * check pi with 1000 digits after floating point at https://mathshistory.st-andrews.ac.uk/HistTopics/1000_places/
-     *
-     * @param floatingPoint number of digits after floating point
-     * @return pi in string format
-     */
-    public String calculate(int floatingPoint) {
-        return null;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class PICalculator
+{
+    private ExecutorService executorService = Executors.newFixedThreadPool(16);
+
+    public String calculate(int floatingPoint)
+    {
+        for (int i = 0; i <= 10000; i++)
+        {
+            executorService.submit(new Calculator(i));
+        }
+        executorService.shutdown();
+        try
+        {
+            executorService.awaitTermination(10000,TimeUnit.MILLISECONDS);
+            executorService.shutdownNow();
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        return Pi.getPi().multiply(BigDecimal.valueOf(2)).toString().substring(0,floatingPoint+2);
     }
 }
