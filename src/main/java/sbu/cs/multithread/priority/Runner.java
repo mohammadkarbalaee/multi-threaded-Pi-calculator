@@ -2,40 +2,46 @@ package sbu.cs.multithread.priority;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class Runner {
 
     public static List<Message> messages = new ArrayList<>();
 
-    /**
-     * add your codes to this function. this function is the caller function which will be called first.
-     * changing other codes in this function is allowed.
-     *
-     * @param blackCount    number of black threads
-     * @param blueCount     number of blue threads
-     * @param whiteCount    number of white threads
-     */
-    public void run(int blackCount, int blueCount, int whiteCount) throws InterruptedException {
+    public void run(int blackCount, int blueCount, int whiteCount) throws InterruptedException
+    {
         List<ColorThread> colorThreads = new ArrayList<>();
-        // your codes here
 
-        for (int i = 0; i < blackCount; i++) {
-            BlackThread blackThread = new BlackThread();
+        CountDownLatch latchBeforeBlue = new CountDownLatch(blackCount);
+        CountDownLatch latchBeforeWhite = new CountDownLatch(blueCount);
+        CountDownLatch latchBeforeEnd = new CountDownLatch(whiteCount);
+
+        for (int i = 0; i < blackCount; i++)
+        {
+            BlackThread blackThread = new BlackThread(latchBeforeBlue);
             colorThreads.add(blackThread);
             blackThread.start();
         }
-        for (int i = 0; i < blueCount; i++) {
-            BlueThread blueThread = new BlueThread();
+
+        latchBeforeBlue.await();
+
+        for (int i = 0; i < blueCount; i++)
+        {
+            BlueThread blueThread = new BlueThread(latchBeforeWhite);
             colorThreads.add(blueThread);
             blueThread.start();
         }
-        for (int i = 0; i < whiteCount; i++) {
-            WhiteThread whiteThread = new WhiteThread();
+
+        latchBeforeWhite.await();
+
+        for (int i = 0; i < whiteCount; i++)
+        {
+            WhiteThread whiteThread = new WhiteThread(latchBeforeEnd);
             colorThreads.add(whiteThread);
             whiteThread.start();
         }
-        // your codes here
 
+        latchBeforeEnd.await();
     }
 
     synchronized public static void addToList(Message message) {
@@ -50,7 +56,8 @@ public class Runner {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException
+    {
 
     }
 }
