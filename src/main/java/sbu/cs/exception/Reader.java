@@ -2,25 +2,61 @@ package sbu.cs.exception;
 
 import java.util.List;
 
-public class Reader {
-
-    /**
-     * declare 2 Exception class. 1 for UnrecognizedCommand and 1 for NotImplementedCommand
-     * iterate on function inputs and check for commands and throw exception when needed.
-     *
-     * @param args
-     */
-    public void readTwitterCommands(List<String> args) {
+public class Reader
+{
+    public void readTwitterCommands(List<String> args) throws UnrecognizedCommandException, NotImplementedCommandException
+    {
+        for (String command : args)
+        {
+            if (!isRecognizable(command))
+            {
+                throw new UnrecognizedCommandException();
+            }
+            else if (!isImplemented(command))
+            {
+                throw new NotImplementedCommandException();
+            }
+        }
     }
 
-    /**
-     * function inputs are String but odd positions must be integer parsable
-     * a valid input is like -> "ap", "2", "beheshti", "3992", "20"
-     * throw BadInput exception when the string is not parsable.
-     *
-     * @param args
-     */
-    public void read(String...args) {
+    private boolean isRecognizable(String command)
+    {
+        if (Util.getNotImplementedCommands().contains(command) || Util.getImplementedCommands().contains(command))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
+    private boolean isImplemented(String command)
+    {
+        if (Util.getImplementedCommands().contains(command))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void read(String...args) throws BadInputException
+    {
+        Integer integer;
+
+        for (int i = 1; i < args.length; i += 2)
+        {
+            try
+            {
+                integer = Integer.parseInt(args[i]);
+            }
+            catch (Exception e)
+            {
+                throw new BadInputException();
+            }
+        }
     }
 }

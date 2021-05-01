@@ -19,9 +19,11 @@ class ReaderTest {
     }
 
     @Test
-    void readCommandTwitterNoException() {
+    void readCommandTwitterNoException() throws UnrecognizedCommandException, NotImplementedCommandException
+    {
         List<String> implementedCommands = Util.getImplementedCommands();
         Collections.shuffle(implementedCommands);
+        System.out.println("no problem: " + implementedCommands);
         reader.readTwitterCommands(implementedCommands);
     }
 
@@ -30,6 +32,7 @@ class ReaderTest {
         List<String> commands = new ArrayList<>(Util.getImplementedCommands());
         commands.addAll(Util.getNotImplementedCommands());
         Collections.shuffle(commands);
+        System.out.println("not impl problem: " + commands);
         assertThrows(ApException.class, () -> {
             reader.readTwitterCommands(commands);
         });
@@ -45,7 +48,8 @@ class ReaderTest {
     }
 
     @Test
-    void readValidInput() {
+    void readValidInput() throws BadInputException
+    {
         reader.read("ap", "3", "9", "9", "2", "1400", "Beheshti", "38", "computer science");
     }
 

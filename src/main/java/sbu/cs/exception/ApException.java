@@ -1,4 +1,6 @@
 package sbu.cs.exception;
 
-public class ApException {
+public class ApException extends Exception
+{
+
 }
